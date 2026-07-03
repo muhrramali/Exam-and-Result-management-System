@@ -15,6 +15,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
         ]);
+
+        // Railway terminates TLS at its edge proxy and forwards requests over
+        // HTTP with X-Forwarded-* headers. Without trusting those headers,
+        // Laravel generates http:// URLs and secure cookies/redirects break.
+        $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
